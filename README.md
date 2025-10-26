@@ -2,6 +2,23 @@
 
 A modern web application built with Next.js that enables seamless communication between parents and teachers through chat, appointments, and notices.
 
+## Quick Start Demo
+
+Try the app with pre-seeded demo data:
+
+```bash
+npm install
+npx prisma migrate dev
+npx prisma db seed
+npm run dev
+```
+
+**Demo Login Credentials:**
+- Teacher: `john.smith@school.com` / `password123`
+- Parent: `mike.brown@email.com` / `password123`
+
+See `DEMO_ACCOUNTS.md` for all demo accounts and `CHAT_TEST.md` for testing real-time chat.
+
 ## Features
 
 ### Core Features
@@ -39,35 +56,41 @@ A modern web application built with Next.js that enables seamless communication 
 ### Installation
 
 1. Clone the repository:
-\`\`\`bash
+```bash
 git clone <repository-url>
 cd PTCA
-\`\`\`
+```
 
 2. Install dependencies:
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 3. Set up environment variables:
-Create a \`.env\` file in the root directory:
-\`\`\`
+Create a `.env` file in the root directory:
+```
 DATABASE_URL="file:./dev.db"
 NEXTAUTH_SECRET="your-secret-key-change-this-in-production"
 NEXTAUTH_URL="http://localhost:3000"
-\`\`\`
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+```
 
 4. Initialize the database:
-\`\`\`bash
+```bash
 npx prisma migrate dev
-\`\`\`
+```
 
-5. Run the development server:
-\`\`\`bash
+5. (Optional) Seed the database with demo data:
+```bash
+npx prisma db seed
+```
+
+6. Run the development server:
+```bash
 npm run dev
-\`\`\`
+```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+7. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Usage
 
@@ -91,7 +114,7 @@ npm run dev
 
 ## Project Structure
 
-\`\`\`
+```
 ├── app/                      # Next.js App Router pages
 │   ├── (auth)/              # Authentication pages
 │   ├── api/                 # API routes
@@ -112,7 +135,7 @@ npm run dev
 ├── pages/api/socket/       # Socket.io server
 ├── prisma/                 # Database schema
 └── types/                  # TypeScript type definitions
-\`\`\`
+```
 
 ## Database Schema
 
@@ -127,17 +150,17 @@ The application uses the following main models:
 ## Development
 
 ### Build for production:
-\`\`\`bash
+```bash
 npm run build
-\`\`\`
+```
 
 ### Start production server:
-\`\`\`bash
+```bash
 npm start
-\`\`\`
+```
 
 ### Prisma commands:
-\`\`\`bash
+```bash
 # Generate Prisma Client
 npx prisma generate
 
@@ -146,7 +169,14 @@ npx prisma migrate dev --name <migration-name>
 
 # Open Prisma Studio (database GUI)
 npx prisma studio
-\`\`\`
+```
+
+### Seed demo data:
+```bash
+npx prisma db seed
+```
+
+This will create demo accounts for testing. See `DEMO_ACCOUNTS.md` for login credentials.
 
 ## Security Features
 
