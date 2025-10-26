@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   // "PARENT" or "TEACHER"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations for teachers
+  inviteCodes      InviteCode[]
+  teacherConnections Connection[] @relation("TeacherConnections")
+  sentMessages      Message[]     @relation("SentMessages")
+  receivedMessages  Message[]     @relation("ReceivedMessages")
+  createdNotices    Notice[]
+
+  // Relations for parents
+  parentConnections Connection[] @relation("ParentConnections")
+}
+
+model InviteCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  teacherId String
+  teacher   User     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  isUsed    Boolean  @default(false)
+
+  @@index([teacherId])
+}
+
+model Connection {
+  id        String   @id @default(cuid())
+  parentId  String
+  parent    User     @relation("ParentConnections", fields: [parentId], references: [id], onDelete: Cascade)
+  teacherId String
+  teacher   User     @relation("TeacherConnections", fields: [teacherId], references: [id], onDelete: Cascade)
+  childName String
+  createdAt DateTime @default(now())
+
+  // Relations
+  messages     Message[]
+  appointments Appointment[]
+  notices      Notice[]
+
+  @@unique([parentId, teacherId])
+  @@index([parentId])
+  @@index([teacherId])
+}
+
+model Message {
+  id           String   @id @default(cuid())
+  senderId     String
+  sender       User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId   String
+  receiver     User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  connectionId String
+  connection   Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  content      String
+  createdAt    DateTime @default(now())
+  isRead       Boolean  @default(false)
+
+  @@index([connectionId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model Appointment {
+  id           String     @id @default(cuid())
+  connectionId String
+  connection   Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  dateTime     DateTime
+  status       String     @default("PENDING") // "PENDING", "CONFIRMED", or "CANCELLED"
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([connectionId])
+}
+
+model Notice {
+  id           String     @id @default(cuid())
+  teacherId    String
+  teacher      User       @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  connectionId String
+  connection   Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  type         String     // "NOTICE" or "COMPLAINT"
+  title        String
+  content      String
+  createdAt    DateTime   @default(now())
+  isRead       Boolean    @default(false)
+
+  @@index([connectionId])
+  @@index([teacherId])
+}
